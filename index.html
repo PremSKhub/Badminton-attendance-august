@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Badminton Attendance - August 2025</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 0 10px 60px;
+    }
+
+    header {
+      width: 100%;
+      height: 130px;
+      background: url('https://images.unsplash.com/photo-1598514982884-616ee042a535?auto=format&fit=crop&w=800&q=80') no-repeat center center/cover;
+      text-align: center;
+      padding-top: 30px;
+      box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.5);
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-shadow: 0 0 8px #00ffcc;
+    }
+
+    main {
+      width: 100%;
+      max-width: 700px;
+      background: rgba(255 255 255 / 0.1);
+      border-radius: 10px;
+      box-shadow: 0 0 15px #00ffccaa;
+      padding: 15px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255 255 255 / 0.2);
+      white-space: nowrap;
+    }
+
+    th {
+      background: rgba(0, 204, 131, 0.7);
+      font-weight: 600;
+      letter-spacing: 1.1px;
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(255 255 255 / 0.05);
+    }
+
+    tbody tr:hover {
+      background: rgba(0, 204, 131, 0.3);
+    }
+
+    .ranking {
+      font-weight: 700;
+      color: #00e676;
+    }
+
+    .note {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #ffcc00;
+      font-weight: bold;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .note svg {
+      width: 24px;
+      height: 24px;
+      fill: #ffcc00;
+    }
+
+    .last-updated {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #ffea00;
+      text-shadow: 0 0 5px #000;
+      text-align: left;
+    }
+
+    button.view-dates-btn {
+      background: #00e676;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      color: #003300;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: #002222;
+      color: #b2f2bb;
+      max-width: 90vw;
+      max-height: 80vh;
+      overflow-y: auto;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 15px #00ffcc;
+      font-size: 1rem;
+      line-height: 1.4;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      color: #00ffcc;
+      cursor: pointer;
+    }
+
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 1.3rem;
+      }
+
+      table {
+        font-size: 0.85rem;
+      }
+
+      th,
+      td {
+        padding: 8px 6px;
+      }
+    }
+
+    /* New colorful scratchcard styles */
+    .scratchcards-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .scratchcard {
+      width: 120px;
+      height: 80px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      position: relative;
+      cursor: pointer;
+      color: #fff;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      user-select: none;
+      text-shadow: 0 0 4px rgba(0,0,0,0.7);
+      transition: transform 0.2s ease;
+    }
+
+    .scratchcard:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(255, 215, 0, 0.8);
+      z-index: 2;
+    }
+
+    .scratchcard:nth-child(1) {
+      background: linear-gradient(135deg, #ff5f6d, #ffc371);
+    }
+
+    .scratchcard:nth-child(2) {
+      background: linear-gradient(135deg, #24c6dc, #514a9d);
+    }
+
+    .scratchcard:nth-child(3) {
+      background: linear-gradient(135deg, #56ab2f, #a8e063);
+    }
+
+    .scratchcard:nth-child(4) {
+      background: linear-gradient(135deg, #ff9966, #ff5e62);
+    }
+
+    /* Longest streak and calendar container styling */
+    .extra-info {
+      margin-top: 20px;
+      background: rgba(255 255 255 / 0.1);
+      padding: 12px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00ffccaa;
+      color: #00ff99;
+      max-width: 700px;
+    }
+
+    .extra-info h2 {
+      margin-top: 0;
+      font-weight: 700;
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+      color: #00cc66;
+      text-shadow: 0 0 6px #00cc66;
+    }
+
+    /* Calendar table */
+    .calendar {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #fff;
+    }
+
+    .calendar th,
+    .calendar td {
+      border: 1px solid rgba(0, 204, 131, 0.5);
+      padding: 6px 5px;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .calendar th {
+      background: rgba(0, 204, 131, 0.7);
+      font-weight: 600;
+    }
+
+    .attendance-dot {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      margin: 0 2px;
+      background: red;
+      opacity: 0.8;
+      position: relative;
+      transition: opacity 0.3s ease;
+    }
+
+    .attendance-dot.present {
+      background: #00ff99;
+      opacity: 1;
+      box-shadow: 0 0 6px #00ff99;
+    }
+
+    /* Tooltip */
+    .attendance-dot:hover::after {
+      content: attr(data-name);
+      position: absolute;
+      bottom: 120%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #00cc66cc;
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      pointer-events: none;
+      color: #000;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>🏸 Attendance Summary - August 2025</h1>
+  </header>
+
+  <main>
+    <table>
+      <thead>
+        <tr>
+          <th>Sr. No</th>
+          <th>Name</th>
+          <th>Attendance %</th>
+          <th>Ranking</th>
+          <th>Dates</th>
+        </tr>
+      </thead>
+      <tbody id="summary-tbody"></tbody>
+    </table>
+
+    <div class="note">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M20 12v1a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-1H3v1a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5v-1zM5 12v-1a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3v1h-2v-1a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v1H5zm9-4a3 3 0 1 0-6 0h6z" />
+      </svg>
+      Rewards Loading
+    </div>
+
+    <div class="scratchcards-container">
+      <div class="scratchcard">Scratch Card 1</div>
+      <div class="scratchcard">Scratch Card 2</div>
+      <div class="scratchcard">Scratch Card 3</div>
+      <div class="scratchcard">Scratch Card 4</div>
+    </div>
+
+    <div class="extra-info">
+      <h2>🏅 Longest Attendance Streak</h2>
+      <div id="longest-streak"></div>
+    </div>
+
+    <div class="extra-info">
+      <h2>📅 Attendance Calendar View</h2>
+      <table class="calendar" id="calendar"></table>
+    </div>
+
+    <div class="last-updated" id="lastUpdated"></div>
+
+    <br><br>
+
+  </main>
+
+  <div id="modalOverlay" class="modal-overlay">
+    <div class="modal">
+      <button class="modal-close">&times;</button>
+      <h2>Attendance Dates</h2>
+      <ul id="datesList"></ul>
+    </div>
+  </div>
+
+  <script>
+    const friends = ["Balaji", "Darshan", "Prem", "Vasanth", "Nehru"];
+
+    // Attendance data for August 2025 as provided
+    const attendanceData = {
+      "Aug 1": ["Balaji", "Darshan", "Prem", "Vasanth"],
+      "Aug 2": ["Balaji", "Darshan", "Nehru", "Prem", "Vasanth"],
+      "Aug 3": ["Darshan", "Prem", "Vasanth"],
+      "Aug 4": ["Balaji", "Prem", "Vasanth"],
+      "Aug 5": ["Balaji", "Darshan", "Prem", "Vasanth"],
+      "Aug 6": ["Balaji", "Darshan", "Nehru", "Prem", "Vasanth"],
+      "Aug 7": ["Balaji", "Darshan", "Nehru", "Prem", "Vasanth"],
+      "Aug 8": ["Darshan", "Nehru", "Prem", "Vasanth"],
+      "Aug 9": ["Balaji", "Nehru", "Prem", "Vasanth"],
+      "Aug 10": ["Darshan", "Prem", "Vasanth"],
+    };
+
+    // Count total days with attendance
+    const totalDays = Object.entries(attendanceData).filter(([_, list]) => list.length).length;
+
+    // Initialize attendance info
+    const attendanceInfo = {};
+    friends.forEach(name => attendanceInfo[name] = { count: 0, dates: [] });
+
+    // Populate attendance counts and dates
+    for (const [date, players] of Object.entries(attendanceData)) {
+      players.forEach(p => {
+        if (friends.includes(p)) {
+          attendanceInfo[p].count++;
+          attendanceInfo[p].dates.push(date);
+        }
+      });
+    }
+
+    // Build attendance array and calculate percentages
+    const attendanceArray = friends.map(name => {
+      const info = attendanceInfo[name];
+      const percent = (info.count / totalDays) * 100;
+      return { name, count: info.count, percent, dates: info.dates };
+    }).sort((a, b) => b.percent - a.percent || a.name.localeCompare(b.name));
+
+    // Assign rankings (handle ties)
+    let rank = 0, lastPercent = null, skip = 0;
+    attendanceArray.forEach((item, i) => {
+      if (item.percent !== lastPercent) {
+        rank += 1 + skip;
+        skip = 0;
+      } else skip++;
+      item.rank = rank;
+      lastPercent = item.percent;
+    });
+
+    // Render table rows
+    const tbody = document.getElementById("summary-tbody");
+    attendanceArray.forEach((item, idx) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+      <td>${idx + 1}</td>
+      <td>${item.name}</td>
+      <td>${item.percent.toFixed(1)}%</td>
+      <td class="ranking">${item.rank}</td>
+      <td><button class="view-dates-btn" data-name="${item.name}">View Dates</button></td>
+    `;
+      tbody.appendChild(tr);
+    });
+
+    // Modal logic
+    const modalOverlay = document.getElementById('modalOverlay');
+    const datesList = document.getElementById('datesList');
+    const modalCloseBtn = modalOverlay.querySelector('.modal-close');
+
+    document.body.addEventListener('click', e => {
+      if (e.target.classList.contains('view-dates-btn')) {
+        const name = e.target.dataset.name;
+        datesList.innerHTML = '';
+        const dates = attendanceArray.find(p => p.name === name).dates;
+        dates.forEach(date => {
+          const li = document.createElement('li');
+          li.textContent = date;
+          datesList.appendChild(li);
+        });
+        modalOverlay.style.display = 'flex';
+      }
+    });
+
+    modalCloseBtn.onclick = () => modalOverlay.style.display = 'none';
+    modalOverlay.onclick = e => {
+      if (e.target === modalOverlay) modalOverlay.style.display = 'none';
+    };
+
+    // Last updated display
+    const lastUpdatedDiv = document.getElementById("lastUpdated");
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2, '0');
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const yyyy = now.getFullYear();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const min = String(now.getMinutes()).padStart(2, '0');
+    lastUpdatedDiv.textContent = `Last Updated: ${dd}/${mm}/${yyyy} ${hh}:${min}`;
+
+    // Calculate longest streak for each friend
+    function getLongestStreak(dates) {
+      // Convert dates strings to a sorted array of day numbers (e.g. "Aug 3" -> 3)
+      const dayNums = dates
+        .map(d => parseInt(d.split(' ')[1]))
+        .sort((a, b) => a - b);
+
+      if (dayNums.length === 0) return 0;
+
+      let longest = 1;
+      let current = 1;
+
+      for (let i = 1; i < dayNums.length; i++) {
+        if (dayNums[i] === dayNums[i - 1] + 1) {
+          current++;
+        } else {
+          longest = Math.max(longest, current);
+          current = 1;
+        }
+      }
+      longest = Math.max(longest, current);
+      return longest;
+    }
+
+    // Find friends with longest streak (allow ties)
+    let maxStreak = 0;
+    let maxStreakFriends = [];
+
+    attendanceArray.forEach(p => {
+      const streak = getLongestStreak(p.dates);
+      if (streak > maxStreak) {
+        maxStreak = streak;
+        maxStreakFriends = [p.name];
+      } else if (streak === maxStreak) {
+        maxStreakFriends.push(p.name);
+      }
+    });
+
+    // Show longest streak info with each name in a span for styling
+    const longestStreakDiv = document.getElementById("longest-streak");
+    if (maxStreak > 1) {
+      longestStreakDiv.innerHTML = `${maxStreakFriends.map(name => `<span style="color:#00ff99; font-weight:bold; margin-right:8px;">${name}</span>`).join(", ")} with a streak of ${maxStreak} days 🎉`;
+    } else {
+      longestStreakDiv.textContent = `No streak longer than 1 day yet.`;
+    }
+
+    // Calendar View Rendering
+    // Dates sorted ascending
+    const sortedDates = Object.keys(attendanceData).sort((a,b)=>{
+      return parseInt(a.split(' ')[1]) - parseInt(b.split(' ')[1]);
+    });
+
+    const calendarTable = document.getElementById('calendar');
+
+    // Build header row
+    const headerRow = document.createElement('tr');
+    const nameTh = document.createElement('th');
+    nameTh.textContent = "Name \\ Date";
+    headerRow.appendChild(nameTh);
+
+    sortedDates.forEach(date => {
+      const th = document.createElement('th');
+      th.textContent = date;
+      headerRow.appendChild(th);
+    });
+    calendarTable.appendChild(headerRow);
+
+    // Build one row per friend with dots indicating attendance
+    attendanceArray.forEach(({ name, dates }) => {
+      const tr = document.createElement('tr');
+      const nameTd = document.createElement('td');
+      nameTd.textContent = name;
+      tr.appendChild(nameTd);
+
+      sortedDates.forEach(date => {
+        const td = document.createElement('td');
+        const dot = document.createElement('span');
+        dot.classList.add('attendance-dot');
+        dot.setAttribute('data-name', name + (attendanceData[date]?.includes(name) ? ' Present' : ' Absent'));
+        if (dates.includes(date)) {
+          dot.classList.add('present');
+        }
+        td.appendChild(dot);
+        tr.appendChild(td);
+      });
+
+      calendarTable.appendChild(tr);
+    });
+  </script>
+
+</body>
+
+</html>
