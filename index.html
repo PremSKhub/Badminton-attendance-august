@@ -297,6 +297,31 @@
       pointer-events: none;
       color: #000;
     }
+
+    /* New: scroll wrapper for calendar */
+    .calendar-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Mobile tweaks for calendar */
+    @media (max-width: 600px) {
+      .calendar th, .calendar td {
+        padding: 4px 3px !important;
+        font-size: 0.7rem !important;
+      }
+
+      .attendance-dot {
+        width: 10px !important;
+        height: 10px !important;
+        margin: 0 1px !important;
+      }
+
+      .calendar th {
+        font-size: 0.75rem !important;
+      }
+    }
   </style>
 </head>
 
@@ -341,7 +366,9 @@
 
     <div class="extra-info">
       <h2>📅 Attendance Calendar View</h2>
-      <table class="calendar" id="calendar"></table>
+      <div class="calendar-wrapper">
+        <table class="calendar" id="calendar"></table>
+      </div>
     </div>
 
     <div class="last-updated" id="lastUpdated"></div>
@@ -460,7 +487,6 @@
 
     // Calculate longest streak for each friend
     function getLongestStreak(dates) {
-      // Convert dates strings to a sorted array of day numbers (e.g. "Aug 3" -> 3)
       const dayNums = dates
         .map(d => parseInt(d.split(' ')[1]))
         .sort((a, b) => a - b);
@@ -496,7 +522,7 @@
       }
     });
 
-    // Show longest streak info with each name in a span for styling
+    // Show longest streak info
     const longestStreakDiv = document.getElementById("longest-streak");
     if (maxStreak > 1) {
       longestStreakDiv.innerHTML = `${maxStreakFriends.map(name => `<span style="color:#00ff99; font-weight:bold; margin-right:8px;">${name}</span>`).join(", ")} with a streak of ${maxStreak} days 🎉`;
@@ -505,8 +531,7 @@
     }
 
     // Calendar View Rendering
-    // Dates sorted ascending
-    const sortedDates = Object.keys(attendanceData).sort((a,b)=>{
+    const sortedDates = Object.keys(attendanceData).sort((a, b) => {
       return parseInt(a.split(' ')[1]) - parseInt(b.split(' ')[1]);
     });
 
