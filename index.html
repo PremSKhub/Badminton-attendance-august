@@ -400,6 +400,9 @@
       "Aug 8": ["Darshan", "Nehru", "Prem", "Vasanth"],
       "Aug 9": ["Balaji", "Nehru", "Prem", "Vasanth"],
       "Aug 10": ["Darshan", "Prem", "Vasanth"],
+      "Aug 11": ["Darshan", "Prem", "Vasanth"],
+      "Aug 12": ["Balaji", "Darshan", "Prem", "Vasanth"],
+      "Aug 13": ["Balaji", "Prem", "Vasanth"], 
     };
 
     // Count total days with attendance
@@ -561,10 +564,14 @@
         const td = document.createElement('td');
         const dot = document.createElement('span');
         dot.classList.add('attendance-dot');
-        dot.setAttribute('data-name', name + (attendanceData[date]?.includes(name) ? ' Present' : ' Absent'));
+
         if (dates.includes(date)) {
           dot.classList.add('present');
+          dot.setAttribute('data-name', `${name} present on ${date}`);
+        } else {
+          dot.setAttribute('data-name', `${name} absent on ${date}`);
         }
+
         td.appendChild(dot);
         tr.appendChild(td);
       });
