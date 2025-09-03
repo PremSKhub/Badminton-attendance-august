@@ -158,22 +158,7 @@
       cursor: pointer;
     }
 
-    @media (max-width: 480px) {
-      header h1 {
-        font-size: 1.3rem;
-      }
-
-      table {
-        font-size: 0.85rem;
-      }
-
-      th,
-      td {
-        padding: 8px 6px;
-      }
-    }
-
-    /* New colorful scratchcard styles */
+    /* Scratch card styles */
     .scratchcards-container {
       display: flex;
       justify-content: center;
@@ -196,8 +181,9 @@
       justify-content: center;
       font-size: 1rem;
       user-select: none;
-      text-shadow: 0 0 4px rgba(0,0,0,0.7);
+      text-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
       transition: transform 0.2s ease;
+      background: linear-gradient(135deg, #333, #666);
     }
 
     .scratchcard:hover {
@@ -206,23 +192,11 @@
       z-index: 2;
     }
 
-    .scratchcard:nth-child(1) {
-      background: linear-gradient(135deg, #ff5f6d, #ffc371);
-    }
-
-    .scratchcard:nth-child(2) {
+    .scratchcard.revealed {
       background: linear-gradient(135deg, #24c6dc, #514a9d);
     }
 
-    .scratchcard:nth-child(3) {
-      background: linear-gradient(135deg, #56ab2f, #a8e063);
-    }
-
-    .scratchcard:nth-child(4) {
-      background: linear-gradient(135deg, #ff9966, #ff5e62);
-    }
-
-    /* Longest streak and calendar container styling */
+    /* Calendar and streak box */
     .extra-info {
       margin-top: 20px;
       background: rgba(255 255 255 / 0.1);
@@ -242,7 +216,6 @@
       text-shadow: 0 0 6px #00cc66;
     }
 
-    /* Calendar table */
     .calendar {
       width: 100%;
       border-collapse: collapse;
@@ -282,7 +255,6 @@
       box-shadow: 0 0 6px #00ff99;
     }
 
-    /* Tooltip */
     .attendance-dot:hover::after {
       content: attr(data-name);
       position: absolute;
@@ -296,31 +268,6 @@
       white-space: nowrap;
       pointer-events: none;
       color: #000;
-    }
-
-    /* New: scroll wrapper for calendar */
-    .calendar-wrapper {
-      width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    /* Mobile tweaks for calendar */
-    @media (max-width: 600px) {
-      .calendar th, .calendar td {
-        padding: 4px 3px !important;
-        font-size: 0.7rem !important;
-      }
-
-      .attendance-dot {
-        width: 10px !important;
-        height: 10px !important;
-        margin: 0 1px !important;
-      }
-
-      .calendar th {
-        font-size: 0.75rem !important;
-      }
     }
   </style>
 </head>
@@ -353,10 +300,10 @@
     </div>
 
     <div class="scratchcards-container">
-      <div class="scratchcard">Scratch Card 1</div>
-      <div class="scratchcard">Scratch Card 2</div>
-      <div class="scratchcard">Scratch Card 3</div>
-      <div class="scratchcard">Scratch Card 4</div>
+      <div class="scratchcard">❓ Scratch Me ❓</div>
+      <div class="scratchcard">❓ Scratch Me ❓</div>
+      <div class="scratchcard">❓ Scratch Me ❓</div>
+      <div class="scratchcard">❓ Scratch Me ❓</div>
     </div>
 
     <div class="extra-info">
@@ -373,8 +320,6 @@
 
     <div class="last-updated" id="lastUpdated"></div>
 
-    <br><br>
-
   </main>
 
   <div id="modalOverlay" class="modal-overlay">
@@ -388,7 +333,6 @@
   <script>
     const friends = ["Balaji", "Darshan", "Prem", "Vasanth", "Nehru"];
 
-    // Attendance data for August 2025 as provided
     const attendanceData = {
       "Aug 1": ["Balaji", "Darshan", "Prem", "Vasanth"],
       "Aug 2": ["Balaji", "Darshan", "Nehru", "Prem", "Vasanth"],
@@ -402,17 +346,33 @@
       "Aug 10": ["Darshan", "Prem", "Vasanth"],
       "Aug 11": ["Darshan", "Prem", "Vasanth"],
       "Aug 12": ["Balaji", "Darshan", "Prem", "Vasanth"],
-      "Aug 13": ["Balaji", "Prem", "Vasanth"], 
+      "Aug 13": ["Balaji", "Prem", "Vasanth"],
+      "Aug 14": [],
+      "Aug 15": [],
+      "Aug 16": ["Balaji", "Darshan", "Prem", "Vasanth"],
+      "Aug 17": ["Balaji", "Darshan", "Prem", "Vasanth"],
+      "Aug 18": [],
+      "Aug 19": ["Balaji", "Prem", "Vasanth"],
+      "Aug 20": ["Balaji", "Darshan", "Prem", "Vasanth"],
+      "Aug 21": ["Balaji", "Prem", "Vasanth"],
+      "Aug 22": ["Balaji", "Prem"],
+      "Aug 23": ["Balaji", "Prem", "Vasanth"],
+      "Aug 24": ["Balaji", "Prem", "Vasanth"],
+      "Aug 25": ["Balaji", "Prem", "Vasanth"],
+      "Aug 26": ["Balaji", "Prem", "Vasanth"],
+      "Aug 27": ["Balaji", "Prem", "Vasanth"],
+      "Aug 28": ["Balaji", "Prem", "Vasanth"],
+      "Aug 29": [],
+      "Aug 30": [],
+      "Aug 31": [],
     };
 
-    // Count total days with attendance
+    // Count days
     const totalDays = Object.entries(attendanceData).filter(([_, list]) => list.length).length;
 
-    // Initialize attendance info
     const attendanceInfo = {};
     friends.forEach(name => attendanceInfo[name] = { count: 0, dates: [] });
 
-    // Populate attendance counts and dates
     for (const [date, players] of Object.entries(attendanceData)) {
       players.forEach(p => {
         if (friends.includes(p)) {
@@ -422,16 +382,14 @@
       });
     }
 
-    // Build attendance array and calculate percentages
     const attendanceArray = friends.map(name => {
       const info = attendanceInfo[name];
       const percent = (info.count / totalDays) * 100;
       return { name, count: info.count, percent, dates: info.dates };
     }).sort((a, b) => b.percent - a.percent || a.name.localeCompare(b.name));
 
-    // Assign rankings (handle ties)
     let rank = 0, lastPercent = null, skip = 0;
-    attendanceArray.forEach((item, i) => {
+    attendanceArray.forEach((item) => {
       if (item.percent !== lastPercent) {
         rank += 1 + skip;
         skip = 0;
@@ -440,21 +398,19 @@
       lastPercent = item.percent;
     });
 
-    // Render table rows
     const tbody = document.getElementById("summary-tbody");
     attendanceArray.forEach((item, idx) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-      <td>${idx + 1}</td>
-      <td>${item.name}</td>
-      <td>${item.percent.toFixed(1)}%</td>
-      <td class="ranking">${item.rank}</td>
-      <td><button class="view-dates-btn" data-name="${item.name}">View Dates</button></td>
-    `;
+        <td>${idx + 1}</td>
+        <td>${item.name}</td>
+        <td>${item.percent.toFixed(1)}%</td>
+        <td class="ranking">${item.rank}</td>
+        <td><button class="view-dates-btn" data-name="${item.name}">View Dates</button></td>
+      `;
       tbody.appendChild(tr);
     });
 
-    // Modal logic
     const modalOverlay = document.getElementById('modalOverlay');
     const datesList = document.getElementById('datesList');
     const modalCloseBtn = modalOverlay.querySelector('.modal-close');
@@ -478,43 +434,24 @@
       if (e.target === modalOverlay) modalOverlay.style.display = 'none';
     };
 
-    // Last updated display
+    // Last updated
     const lastUpdatedDiv = document.getElementById("lastUpdated");
     const now = new Date();
-    const dd = String(now.getDate()).padStart(2, '0');
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const yyyy = now.getFullYear();
-    const hh = String(now.getHours()).padStart(2, '0');
-    const min = String(now.getMinutes()).padStart(2, '0');
-    lastUpdatedDiv.textContent = `Last Updated: ${dd}/${mm}/${yyyy} ${hh}:${min}`;
+    lastUpdatedDiv.textContent = `Last Updated: ${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}`;
 
-    // Calculate longest streak for each friend
+    // Longest streak
     function getLongestStreak(dates) {
-      const dayNums = dates
-        .map(d => parseInt(d.split(' ')[1]))
-        .sort((a, b) => a - b);
-
+      const dayNums = dates.map(d => parseInt(d.split(' ')[1])).sort((a, b) => a - b);
       if (dayNums.length === 0) return 0;
-
-      let longest = 1;
-      let current = 1;
-
+      let longest = 1, current = 1;
       for (let i = 1; i < dayNums.length; i++) {
-        if (dayNums[i] === dayNums[i - 1] + 1) {
-          current++;
-        } else {
-          longest = Math.max(longest, current);
-          current = 1;
-        }
+        if (dayNums[i] === dayNums[i - 1] + 1) current++;
+        else { longest = Math.max(longest, current); current = 1; }
       }
-      longest = Math.max(longest, current);
-      return longest;
+      return Math.max(longest, current);
     }
 
-    // Find friends with longest streak (allow ties)
-    let maxStreak = 0;
-    let maxStreakFriends = [];
-
+    let maxStreak = 0, maxStreakFriends = [];
     attendanceArray.forEach(p => {
       const streak = getLongestStreak(p.dates);
       if (streak > maxStreak) {
@@ -525,61 +462,63 @@
       }
     });
 
-    // Show longest streak info
     const longestStreakDiv = document.getElementById("longest-streak");
     if (maxStreak > 1) {
-      longestStreakDiv.innerHTML = `${maxStreakFriends.map(name => `<span style="color:#00ff99; font-weight:bold; margin-right:8px;">${name}</span>`).join(", ")} with a streak of ${maxStreak} days 🎉`;
+      longestStreakDiv.innerHTML = `${maxStreakFriends.join(", ")} with a streak of ${maxStreak} days 🎉`;
     } else {
       longestStreakDiv.textContent = `No streak longer than 1 day yet.`;
     }
 
-    // Calendar View Rendering
-    const sortedDates = Object.keys(attendanceData).sort((a, b) => {
-      return parseInt(a.split(' ')[1]) - parseInt(b.split(' ')[1]);
-    });
-
+    // Calendar View
+    const sortedDates = Object.keys(attendanceData).sort((a, b) => parseInt(a.split(' ')[1]) - parseInt(b.split(' ')[1]));
     const calendarTable = document.getElementById('calendar');
-
-    // Build header row
     const headerRow = document.createElement('tr');
-    const nameTh = document.createElement('th');
-    nameTh.textContent = "Name \\ Date";
-    headerRow.appendChild(nameTh);
-
-    sortedDates.forEach(date => {
-      const th = document.createElement('th');
-      th.textContent = date;
-      headerRow.appendChild(th);
-    });
+    headerRow.innerHTML = `<th>Date</th>${friends.map(n => `<th>${n}</th>`).join('')}`;
     calendarTable.appendChild(headerRow);
 
-    // Build one row per friend with dots indicating attendance
-    attendanceArray.forEach(({ name, dates }) => {
-      const tr = document.createElement('tr');
-      const nameTd = document.createElement('td');
-      nameTd.textContent = name;
-      tr.appendChild(nameTd);
+    sortedDates.forEach(date => {
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${date}</td>${friends.map(name => {
+        const present = attendanceData[date].includes(name);
+        return `<td><span class="attendance-dot ${present ? 'present' : ''}" data-name="${name}"></span></td>`;
+      }).join('')}`;
+      calendarTable.appendChild(row);
+    });
 
-      sortedDates.forEach(date => {
-        const td = document.createElement('td');
-        const dot = document.createElement('span');
-        dot.classList.add('attendance-dot');
+    // Scratch card logic
+    const scratchcards = document.querySelectorAll('.scratchcard');
+    const rewards = ["🏸 Sweatband", "🏸 Sweatband", "🏸 Water Bottle", "🏸 Water Bottle"];
 
-        if (dates.includes(date)) {
-          dot.classList.add('present');
-          dot.setAttribute('data-name', `${name} present on ${date}`);
-        } else {
-          dot.setAttribute('data-name', `${name} absent on ${date}`);
-        }
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
 
-        td.appendChild(dot);
-        tr.appendChild(td);
+    const shuffledRewards = shuffle([...rewards]);
+    let revealed = false;
+
+    scratchcards.forEach((card, index) => {
+      card.addEventListener('click', () => {
+        if (revealed || card.classList.contains('revealed')) return;
+        card.textContent = shuffledRewards[index];
+        card.classList.add('revealed');
+        revealed = true;
+        scratchcards.forEach(c => {
+          if (!c.classList.contains('revealed')) {
+            c.style.opacity = '0.4';
+            c.style.pointerEvents = 'none';
+          }
+        });
+        // Celebration
+        setTimeout(() => {
+          alert(`🎉 Congrats! You won a ${shuffledRewards[index]} 🏸`);
+        }, 300);
       });
-
-      calendarTable.appendChild(tr);
     });
   </script>
-
 </body>
 
 </html>
